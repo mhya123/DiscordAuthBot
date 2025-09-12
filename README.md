@@ -37,7 +37,7 @@
 
 ```powershell
 # 克隆项目
-git clone <repository-url>
+[git clone <repository-url>](https://github.com/mhya123/DiscordAuthBot.git)
 cd authbot
 
 # 创建并激活虚拟环境
