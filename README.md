@@ -1,7 +1,7 @@
 # Discord AuthBot
 
 一个功能完整的 Discord 身份验证机器人，支持外部API认证、双语界面、权限管理和持久化存储。
-
+注意！API接口只适配WWW.HVHBBS.CC
 ## ✨ 主要功能
 
 ### 🔐 身份认证系统
