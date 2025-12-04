@@ -7,8 +7,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from .commands import BasicCommands
-from .auth_commands import AuthCommands
+from .auth_commands import register_commands
 from .storage import ensure_db_exists
 
 log = logging.getLogger("authbot")
@@ -49,8 +48,7 @@ def build_bot() -> commands.Bot:
             log.exception("Failed to sync application commands")
 
     # Register slash command group
-    bot.tree.add_command(BasicCommands())
-    bot.tree.add_command(AuthCommands(bot))
+    register_commands(bot)
     return bot
 
 

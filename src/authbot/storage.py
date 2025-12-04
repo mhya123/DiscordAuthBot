@@ -70,3 +70,9 @@ def revoke_verified(guild_id: int, user_id: int, path: str = DEFAULT_PATH) -> bo
         save_db(db, path)
         return True
     return False
+
+
+def get_user_info(guild_id: int, user_id: int, path: str = DEFAULT_PATH) -> Dict[str, Any] | None:
+    """获取用户的验证信息"""
+    db = load_db(path)
+    return db.get("guilds", {}).get(str(guild_id), {}).get("verified", {}).get(str(user_id))
