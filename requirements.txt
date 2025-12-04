@@ -1,3 +1,6 @@
 discord.py>=2.3,<3
 python-dotenv>=1.0,<2
 httpx>=0.27,<1
+
+# Database (pymysql only needed if using MySQL)
+pymysql>=1.1,<2

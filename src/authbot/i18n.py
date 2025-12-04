@@ -216,6 +216,24 @@ _messages: Dict[str, Dict[str, str]] = {
         "zh": "查看已验证用户列表",
         "en": "List verified users",
     },
+    "help_panel_desc": {
+        "zh": "发送验证面板卡片",
+        "en": "Send auth panel card",
+    },
+
+    # ==================== 验证面板 ====================
+    "panel_sent": {
+        "zh": "✅ 验证面板已发送到 {channel}",
+        "en": "✅ Auth panel sent to {channel}",
+    },
+    "panel_no_permission": {
+        "zh": "❌ 没有权限在该频道发送消息。",
+        "en": "❌ No permission to send messages in that channel.",
+    },
+    "invalid_channel": {
+        "zh": "❌ 无效的频道。",
+        "en": "❌ Invalid channel.",
+    },
 }
 
 

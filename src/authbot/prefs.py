@@ -1,20 +1,16 @@
 from __future__ import annotations
 
-from . import storage
+from .storage import get_db
 
 
 def set_lang(guild_id: int, user_id: int, lang: str) -> None:
-    db = storage.load_db()
-    guilds = db.setdefault("guilds", {})
-    g = guilds.setdefault(str(guild_id), {})
-    langs = g.setdefault("lang", {})
-    langs[str(user_id)] = lang
-    storage.save_db(db)
+    """设置用户的语言偏好"""
+    get_db().set_lang(guild_id, user_id, lang)
 
 
 def get_lang(guild_id: int, user_id: int) -> str:
-    db = storage.load_db()
+    """获取用户的语言偏好，默认为 zh"""
     try:
-        return db.get("guilds", {}).get(str(guild_id), {}).get("lang", {}).get(str(user_id), "zh")
+        return get_db().get_lang(guild_id, user_id)
     except Exception:
         return "zh"

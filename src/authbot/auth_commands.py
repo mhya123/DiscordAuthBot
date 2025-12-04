@@ -354,9 +354,8 @@ class AuthCommands(app_commands.Group, name="auth", description="🛡️ 身份�
 
         await interaction.response.defer(ephemeral=True)
         
-        from .storage import load_db
-        db = load_db()
-        verified = db.get("guilds", {}).get(str(guild.id), {}).get("verified", {})
+        from .storage import get_verified_users
+        verified = get_verified_users(guild.id)
         
         if not verified:
             await interaction.followup.send(t("no_verified_users", get_lang(guild.id, interaction.user.id)), ephemeral=True)
@@ -383,6 +382,50 @@ class AuthCommands(app_commands.Group, name="auth", description="🛡️ 身份�
 
     @list_verified.error
     async def list_verified_error(self, interaction: Interaction, error: Exception):
+        from discord.app_commands.errors import MissingPermissions
+        if isinstance(error, MissingPermissions):
+            await interaction.response.send_message(
+                t("missing_admin", get_lang(interaction.guild.id if interaction.guild else 0, interaction.user.id)), 
+                ephemeral=True
+            )
+
+    @app_commands.command(name="panel", description="📨 发送验证面板卡片 / Send auth panel")
+    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.describe(channel="发送到的频道 / Target channel (默认当前频道)")
+    async def send_panel(self, interaction: Interaction, channel: Optional[discord.TextChannel] = None):
+        """发送验证面板卡片到指定频道"""
+        guild = interaction.guild
+        if guild is None:
+            await interaction.response.send_message(t("must_use_in_server", get_lang(0, interaction.user.id)), ephemeral=True)
+            return
+        
+        target_channel = channel or interaction.channel
+        if not isinstance(target_channel, discord.TextChannel):
+            await interaction.response.send_message(t("invalid_channel", get_lang(guild.id, interaction.user.id)), ephemeral=True)
+            return
+        
+        await interaction.response.defer(ephemeral=True)
+        
+        try:
+            await self._post_welcome_message(target_channel, guild)
+            await interaction.followup.send(
+                t("panel_sent", get_lang(guild.id, interaction.user.id), channel=target_channel.mention),
+                ephemeral=True
+            )
+        except discord.Forbidden:
+            await interaction.followup.send(
+                t("panel_no_permission", get_lang(guild.id, interaction.user.id)),
+                ephemeral=True
+            )
+        except Exception as e:
+            log.exception("Failed to send panel: %s", e)
+            await interaction.followup.send(
+                t("generic_error", get_lang(guild.id, interaction.user.id)),
+                ephemeral=True
+            )
+
+    @send_panel.error
+    async def send_panel_error(self, interaction: Interaction, error: Exception):
         from discord.app_commands.errors import MissingPermissions
         if isinstance(error, MissingPermissions):
             await interaction.response.send_message(
@@ -519,7 +562,8 @@ async def help_command(interaction: Interaction):
         value=(
             "`/auth setup` - " + t("help_setup_desc", lang) + "\n"
             "`/auth revoke` - " + t("help_revoke_desc", lang) + "\n"
-            "`/auth list` - " + t("help_list_desc", lang)
+            "`/auth list` - " + t("help_list_desc", lang) + "\n"
+            "`/auth panel` - " + t("help_panel_desc", lang)
         ),
         inline=False
     )
